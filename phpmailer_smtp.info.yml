@@ -1,0 +1,6 @@
+name: PHPMailer SMTP
+description: Uses the PHPMailer library to send emails via SMTP.
+type: module
+package: Mail
+core: 8.x
+configure: phpmailer_smtp.settings

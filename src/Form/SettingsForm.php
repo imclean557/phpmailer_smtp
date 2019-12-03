@@ -43,6 +43,8 @@ class SettingsForm extends ConfigFormBase {
    *   The mail manager.
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   The language manager.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
   public function __construct(MailManagerInterface $mail_manager, LanguageManagerInterface $language_manager, ModuleHandlerInterface $module_handler) {
     $this->mailManager = $mail_manager;
@@ -304,11 +306,11 @@ class SettingsForm extends ConfigFormBase {
       if ($this->moduleHandler->moduleExists('dblog')) {
         $watchdog_url = Link::createFromRoute($this->t('Check the logs'), 'dblog.overview');
         $this->messenger()->addMessage($this->t('A test e-mail has been sent to %email. @watchdog-url for any error messages.', [
-            '%email' => $values['phpmailer_smtp_test'],
-            '@watchdog-url' => $watchdog_url->toString(),
+          '%email' => $values['phpmailer_smtp_test'],
+          '@watchdog-url' => $watchdog_url->toString(),
         ]));
       }
-       else {
+      else {
         $this->messenger()->addMessage($this->t('A test e-mail has been sent to %email.', [
           '%email' => $values['phpmailer_smtp_test'],
         ]));

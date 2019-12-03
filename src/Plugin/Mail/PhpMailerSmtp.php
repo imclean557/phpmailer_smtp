@@ -21,7 +21,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
 
   /**
    * Whether to allow sending messages with an empty body.
-   * @var boolean
+   *
+   * @var bool
    */
   public $AllowEmpty = TRUE;
 
@@ -170,9 +171,9 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
       // Fall back on the site name.
       $from_name = \Drupal::config('system.site')->get('name');
     }
-    $this->FromName   = $from_name;
-    $this->Sender     = '';
-    $this->MessageID  = '';
+    $this->FromName  = $from_name;
+    $this->Sender    = '';
+    $this->MessageID = '';
   }
 
   /**

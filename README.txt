@@ -87,10 +87,10 @@ composer require drupal/phpmailer_smtp
 
 * Debug settings
 
-  PHPMailer SMTP supports rerouting all e-mails for debugging purposes, to prevent
-  you from accidentally sending out e-mails to real users from a development
-  site.  To enable this feature, add the following lines to the end of your
-  settings.php (usually located in sites/default):
+  PHPMailer SMTP supports rerouting all e-mails for debugging purposes, to
+  prevent you from accidentally sending out e-mails to real users from a
+  development site.  To enable this feature, add the following lines to the end
+  of your settings.php (usually located in sites/default):
 
     $conf['system.maintenance']['phpmailer_smtp_debug_email']
       = 'your_debug_email@yoursite.com';
@@ -106,4 +106,3 @@ Authors:
 Original authors of the PHPMailer module:
 * Stefan M. Kudwien (smk-ka) - http://drupal.org/user/48898
 * Daniel F. Kudwien (sun) - http://drupal.org/user/54136
-

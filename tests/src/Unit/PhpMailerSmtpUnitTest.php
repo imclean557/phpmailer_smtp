@@ -71,7 +71,11 @@ class PhpMailerSmtpUnitTest extends UnitTestCase {
         }
       }
       $result = phpmailer_smtp_parse_address($test);
-      $this->assertEqual($result[0], $address, t('Successfully extracted %email, %name from %address.', ['%email' => $result[0]['mail'], '%name' => $result[0]['name'] ? $result[0]['name'] : '(blank)', '%address' => $test]), 'PHPMailer SMTP');
+      $this->assertEqual($result[0], $address, t('Successfully extracted %email, %name from %address.', [
+        '%email' => $result[0]['mail'],
+        '%name' => $result[0]['name'] ? $result[0]['name'] : '(blank)',
+        '%address' => $test,
+      ]), 'PHPMailer SMTP');
       $all[] = $test;
     }
 

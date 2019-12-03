@@ -5,7 +5,6 @@
  * Uses the PHPMailer library to send emails via SMTP.
  */
 
-use Drupal\Core\Url;
 use Drupal\Component\Utility\Unicode;
 
 /**

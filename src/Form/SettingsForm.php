@@ -153,7 +153,7 @@ class SettingsForm extends ConfigFormBase {
       $have_password = ($config->get('smtp_password') != '');
       $form['auth']['smtp_password'] = [
         '#type' => 'password',
-        '#title' => $have_password ? $this->t('Change password') : t('Password'),
+        '#title' => $have_password ? $this->t('Change password') : $this->t('Password'),
         '#description' => $have_password ? $this->t('Leave empty, if you do not intend to change the current password.') : '',
       ];
     }
@@ -296,11 +296,11 @@ class SettingsForm extends ConfigFormBase {
       $langcode = $this->languageManager->getDefaultLanguage()->getId();
 
       // Prepare the message without sending.
-      $message = \Drupal::service('plugin.manager.mail')->mail('phpmailer_smtp', 'test', $values['phpmailer_smtp_test'], $langcode, [], NULL, FALSE);
+      $message = $this->mailManager->mail('phpmailer_smtp', 'test', $values['phpmailer_smtp_test'], $langcode, [], NULL, FALSE);
 
       // Send the message.
       module_load_include('inc', 'phpmailer_smtp', 'includes/phpmailer_smtp.drupal');
-      $ret_val = phpmailer_smtp_send($message);
+      phpmailer_smtp_send($message);
 
       // Some users may not have the dblog module enabled.
       if ($this->moduleHandler->moduleExists('dblog')) {

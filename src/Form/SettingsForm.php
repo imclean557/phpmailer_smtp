@@ -236,12 +236,40 @@ class SettingsForm extends ConfigFormBase {
       ],
     ];
 
+    $form['advanced']['envelope_sender_settings'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Envelope Sender Settings'),
+      '#description' => $this->t('Specify what should be used in the SMTP <em>MAIL FROM:</em> command. Usually this will be <em>Default</em>'),
+    ];
+    $form['advanced']['envelope_sender_settings']['smtp_envelope_sender_option'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Envelope sender'),
+      '#default_value' => $config->get('smtp_envelope_sender_option'),
+      '#options' => [
+        'default' => $this->t('Default'),
+        'site_mail' => $this->t('Site mail'),
+        'from_address' => $this->t('From header'),
+        'other' => $this->t('Other..'),
+      ],
+    ];
+    $form['advanced']['envelope_sender_settings']['smtp_envelope_sender'] = [
+      '#type' => 'email',
+      '#title' => $this->t('Envelope sender address'),
+      '#default_value' => $config->get('smtp_envelope_sender'),
+      '#description' => $this->t('Type in an address to use as the envelope sender.'),
+      '#states' => [
+        'visible' => [
+          ':input[name="smtp_envelope_sender_option"]' => ['value' => 'other'],
+        ],
+      ],
+    ];
+
     $form['test'] = [
       '#type' => 'details',
       '#title' => $this->t('Test configuration'),
     ];
     $form['test']['phpmailer_smtp_test'] = [
-      '#type' => 'textfield',
+      '#type' => 'email',
       '#title' => $this->t('Recipient'),
       '#default_value' => '',
       '#description' => $this->t('Type in an address to have a test e-mail sent there.'),
@@ -280,7 +308,9 @@ class SettingsForm extends ConfigFormBase {
       ->set('smtp_always_replyto', $values['smtp_always_replyto'])
       ->set('smtp_keepalive', $values['smtp_keepalive'])
       ->set('smtp_debug', $values['smtp_debug'])
-      ->set('smtp_debug_log', $values['smtp_debug_log']);
+      ->set('smtp_debug_log', $values['smtp_debug_log'])
+      ->set('smtp_envelope_sender_option', $values['smtp_envelope_sender_option'])
+      ->set('smtp_envelope_sender', $values['smtp_envelope_sender']);
 
     // Only save the password, if it is not empty.
     if (!empty($values['smtp_password'])) {

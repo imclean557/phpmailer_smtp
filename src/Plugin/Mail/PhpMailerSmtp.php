@@ -20,6 +20,13 @@ use PHPMailer\PHPMailer\PHPMailer;
 class PhpMailerSmtp extends PHPMailer implements MailInterface {
 
   /**
+   * PHPMailer SMTP Config.
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
+  protected $config;
+
+  /**
    * Whether to allow sending messages with an empty body.
    *
    * @var bool
@@ -65,42 +72,43 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
    * Constructor.
    */
   public function __construct() {
+    $this->config = \Drupal::config('phpmailer_smtp.settings');
+
     // Throw exceptions instead of dying (since 5.0.0).
     if (method_exists(get_parent_class($this), '__construct')) {
       parent::__construct(TRUE);
     }
-    $module_config = \Drupal::config('phpmailer_smtp.settings');
 
     $this->IsSMTP();
     $this->Reset();
 
-    $this->Host = $module_config->get('smtp_host', '');
-    if ($backup = $module_config->get('smtp_hostbackup', '')) {
+    $this->Host = $this->config->get('smtp_host', '');
+    if ($backup = $this->config->get('smtp_hostbackup', '')) {
       $this->Host .= ';' . $backup;
     }
-    $this->Port = $module_config->get('smtp_port', '25');
-    $smtp_protocol = $module_config->get('smtp_protocol', '');
+    $this->Port = $this->config->get('smtp_port', '25');
+    $smtp_protocol = $this->config->get('smtp_protocol', '');
     $this->SMTPSecure = $smtp_protocol;
 
     if (!empty($smtp_protocol)) {
-      $ssl_verify_peer = $module_config->get('smtp_ssl_verify_peer');
+      $ssl_verify_peer = $this->config->get('smtp_ssl_verify_peer');
       $this->SMTPOptions['ssl']['verify_peer'] = isset($ssl_verify_peer) ? $ssl_verify_peer : 1;
-      $ssl_verify_peer_name = $module_config->get('smtp_ssl_verify_peer_name');
+      $ssl_verify_peer_name = $this->config->get('smtp_ssl_verify_peer_name');
       $this->SMTPOptions['ssl']['verify_peer_name'] = isset($ssl_verify_peer_name) ? $ssl_verify_peer_name : 1;
-      $ssl_allow_self_signed = $module_config->get('smtp_ssl_allow_self_signed');
+      $ssl_allow_self_signed = $this->config->get('smtp_ssl_allow_self_signed');
       $this->SMTPOptions['ssl']['allow_self_signed'] = isset($ssl_allow_self_signed) ? $ssl_allow_self_signed : 0;
     }
 
     // Use SMTP authentication if both username and password are given.
-    $this->Username = $module_config->get('smtp_username', '');
-    $this->Password = $module_config->get('smtp_password', '');
+    $this->Username = $this->config->get('smtp_username', '');
+    $this->Password = $this->config->get('smtp_password', '');
     $this->SMTPAuth = (bool) ($this->Username != '' && $this->Password != '');
 
-    $this->SMTPKeepAlive = $module_config->get('smtp_keepalive', 0);
+    $this->SMTPKeepAlive = $this->config->get('smtp_keepalive', 0);
 
     $this->Timeout = 30;
 
-    $this->drupalDebug = $module_config->get('smtp_debug', 0);
+    $this->drupalDebug = $this->config->get('smtp_debug', 0);
     if ($this->drupalDebug > $this->SMTPDebug && \Drupal::currentUser()->hasPermission('administer phpmailer smtp settings')) {
       $this->SMTPDebug = $this->drupalDebug;
     }
@@ -132,7 +140,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
     if ($this->SMTPDebug) {
       if ($this->drupalDebug && ($this->drupalDebugOutput = ob_get_contents())) {
         drupal_set_message($this->drupalDebugOutput);
-        if (\Drupal::config('phpmailer_smtp.settings')->get('smtp_debug_log', 0)) {
+        if ($this->config->get('smtp_debug_log', 0)) {
           \Drupal::logger('phpmailer_smtp')->debug('Output of communication with SMTP server:<br /><pre>{output}</pre>', ['output' => print_r($this->drupalDebugOutput, TRUE)]);
         }
       }
@@ -166,7 +174,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
     $this->Encoding    = '8bit';
 
     // Set default From name.
-    $from_name = \Drupal::config('phpmailer_smtp.settings')->get('smtp_fromname');
+    $from_name = $this->config->get('smtp_fromname');
     if ($from_name == '') {
       // Fall back on the site name.
       $from_name = \Drupal::config('system.site')->get('name');
@@ -314,7 +322,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
         unset($message['headers']['Reply-To']);
       }
       // @todo This might not be the correct way to do this.
-      elseif (\Drupal::config('phpmailer_smtp.settings')->get('smtp_always_replyto')) {
+      elseif ($this->config->get('smtp_always_replyto')) {
         // If no Reply-To header has been explicitly set, use the From address
         // to be able to respond to e-mails sent via Google Mail.
         $this->AddReplyTo($from['mail'], $from['name']);
@@ -349,6 +357,21 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
           $this->$property = $message['headers'][$source];
           unset($message['headers'][$source]);
         }
+      }
+
+      // Check envelope sender option.
+      switch ($this->config->get('smtp_envelope_sender_option')) {
+        case 'site_mail':
+          $this->Sender = \Drupal::config('system.site')->get('mail');
+          break;
+
+        case 'from_address':
+          $this->Sender = $from['mail'];
+          break;
+
+        case 'other':
+          $this->Sender = $this->config->get('smtp_envelope_sender');
+          break;
       }
 
       // This one is always set by PHPMailer.

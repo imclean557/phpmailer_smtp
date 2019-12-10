@@ -360,18 +360,18 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
       }
 
       // Check envelope sender option.
-      switch ($this->config->get('smtp_envelope_sender_option')) {
-        case 'site_mail':
-          $this->Sender = \Drupal::config('system.site')->get('mail');
-          break;
+      $senderOption = $this->config->get('smtp_envelope_sender_option');
 
-        case 'from_address':
-          $this->Sender = $from['mail'];
-          break;
+      if ($senderOption === 'site_mail') {
+        $this->Sender = \Drupal::config('system.site')->get('mail');
+      }
 
-        case 'other':
-          $this->Sender = $this->config->get('smtp_envelope_sender');
-          break;
+      if ($senderOption === 'from_address') {
+        $this->Sender = $from['mail'];
+      }
+
+      if ($senderOption === 'other') {
+        $this->Sender = $this->config->get('smtp_envelope_sender');
       }
 
       // This one is always set by PHPMailer.

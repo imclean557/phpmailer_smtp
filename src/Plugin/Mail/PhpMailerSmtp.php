@@ -19,6 +19,8 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class PhpMailerSmtp extends PHPMailer implements MailInterface {
 
+  use \Drupal\Core\StringTranslation\StringTranslationTrait;
+
   /**
    * PHPMailer SMTP Config.
    *

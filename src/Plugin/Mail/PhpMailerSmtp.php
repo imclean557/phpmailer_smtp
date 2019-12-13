@@ -4,6 +4,7 @@ namespace Drupal\phpmailer_smtp\Plugin\Mail;
 
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Mail\MailInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /**
@@ -19,7 +20,7 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class PhpMailerSmtp extends PHPMailer implements MailInterface {
 
-  use \Drupal\Core\StringTranslation\StringTranslationTrait;
+  use StringTranslationTrait;
 
   /**
    * PHPMailer SMTP Config.

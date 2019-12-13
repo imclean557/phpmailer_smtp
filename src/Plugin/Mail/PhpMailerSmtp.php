@@ -281,8 +281,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
    */
   public function mail(array $message) {
     try {
-      // Parse 'From' e-mail address.
-      $from = phpmailer_smtp_parse_address($message['from']);
+      // Parse 'From' address.
+      $from = phpmailer_smtp_parse_address($message['headers']['From']);
       $from = reset($from);
       $this->From = $from['mail'];
       if ($from['name'] != '') {
@@ -351,7 +351,6 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
       $properties = [
         'X-Priority'                => 'Priority',
         'Content-Transfer-Encoding' => 'Encoding',
-        'Sender'                    => 'Sender',
         'Message-ID'                => 'MessageID',
       ];
       foreach ($properties as $source => $property) {
@@ -360,6 +359,22 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
           unset($message['headers'][$source]);
         }
       }
+
+      // Check for Sender header.
+      if (isset($message['headers']['Sender'])) {
+        $this->addCustomHeader('Sender', $message['headers']['Sender']);
+        unset($message['headers']['Sender']);
+      }
+
+      // Return-Path should not be set by Drupal.
+      if (isset($message['headers']['Return-Path'])) {
+        unset($message['headers']['Return-Path']);
+      }
+
+      // Set default sender address.
+      $envelopeSender = phpmailer_smtp_parse_address($message['from']);
+      $envelopeSender = reset($envelopeSender);
+      $this->Sender = $envelopeSender['mail'];
 
       // Check envelope sender option.
       $senderOption = $this->config->get('smtp_envelope_sender_option');

@@ -395,7 +395,6 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
       // @see PHPMailer::SecureHeader()
       foreach ($message['headers'] as $key => $value) {
         $this->AddCustomHeader($key, $value);
-        unset($message['headers'][$key]);
       }
 
       $this->Subject = $message['subject'];

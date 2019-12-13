@@ -360,12 +360,6 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
         }
       }
 
-      // Check for Sender header.
-      if (isset($message['headers']['Sender'])) {
-        $this->addCustomHeader('Sender', $message['headers']['Sender']);
-        unset($message['headers']['Sender']);
-      }
-
       // Return-Path should not be set by Drupal.
       if (isset($message['headers']['Return-Path'])) {
         unset($message['headers']['Return-Path']);
@@ -399,7 +393,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
       // unwanted newline characters to avoid header injection.
       // @see PHPMailer::SecureHeader()
       foreach ($message['headers'] as $key => $value) {
-        $this->AddCustomHeader("$key:$value");
+        $this->AddCustomHeader($key, $value);
+        unset($message['headers'][$key]);
       }
 
       $this->Subject = $message['subject'];

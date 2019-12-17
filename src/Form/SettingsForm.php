@@ -168,6 +168,12 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('smtp_fromname'),
       '#description' => $this->t('Enter a name that should appear as the sender for all messages.  If left blank the site name will be used instead: %sitename.', ['%sitename' => $this->config('system.site')->get('name')]),
     ];
+    $form['advanced']['smtp_ehlo_host'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('HELO/EHLO Hostname'),
+      '#default_value' => $config->get('smtp_ehlo_host'),
+      '#description' => $this->t('The hostname to use as the default HELO/EHLO string and Message-ID header. Leave blank to let PHPMailer determine it.'),
+    ];
     $form['advanced']['smtp_always_replyto'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Always set "Reply-To" address'),
@@ -305,6 +311,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('smtp_ssl_allow_self_signed', $values['smtp_ssl_allow_self_signed'])
       ->set('smtp_username', $values['smtp_username'])
       ->set('smtp_fromname', $values['smtp_fromname'])
+      ->set('smtp_ehlo_host', $values['smtp_ehlo_host'])
       ->set('smtp_always_replyto', $values['smtp_always_replyto'])
       ->set('smtp_keepalive', $values['smtp_keepalive'])
       ->set('smtp_debug', $values['smtp_debug'])

@@ -386,6 +386,10 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
         $this->Sender = $this->config->get('smtp_envelope_sender');
       }
 
+      if (!empty($this->config->get('smtp_ehlo_host'))) {
+        $this->Hostname = $this->config->get('smtp_ehlo_host');
+      }
+
       // This one is always set by PHPMailer.
       unset($message['headers']['MIME-Version']);
 

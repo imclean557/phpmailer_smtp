@@ -16,3 +16,4 @@ smtp_ssl_verify_peer_name: 1
 smtp_ssl_allow_self_signed: 0
 smtp_envelope_sender_option: 'default'
 smtp_envelope_sender: ''
+smtp_ehlo_host: ''

@@ -1,5 +1,5 @@
-
--- SUMMARY --
+INTRODUCTION
+------------
 
 Uses the PHPMailer library to send emails via SMTP.
 
@@ -8,8 +8,8 @@ For a full description of the module, visit the project page:
 To submit bug reports and feature suggestions, or to track changes:
   http://drupal.org/project/issues/phpmailer_smtp
 
-
--- REQUIREMENTS --
+REQUIREMENTS
+------------
 
 * Access to an SMTP server
 
@@ -30,11 +30,13 @@ Optional:
 * Swift Mailer module to format HTML emails
   https://www.drupal.org/project/swiftmailer
 
--- INSTALLATION --
+INSTALLATION
+------------
 
 composer require drupal/phpmailer_smtp
 
--- CONFIGURATION --
+CONFIGURATION
+-------------
 
 * Configure user permissions at Administer >> User management >> Access
   control >> PHPMailer SMTP module.
@@ -51,7 +53,8 @@ composer require drupal/phpmailer_smtp
   Select "PHPMailer SMTP" as "Sender" under "Default Mail System" and "Module-
   Specific Configuration" as required.
 
--- EXAMPLES --
+EXAMPLES
+--------
 
 * Using Google Mail or Google Apps as SMTP server
 
@@ -98,7 +101,8 @@ composer require drupal/phpmailer_smtp
   This will change the recipient of all e-mails to the configured address.
 
 
--- CREDITS --
+CREDITS
+-------
 
 Authors:
 * Ian McLean (imclean) - http://drupal.org/u/imclean

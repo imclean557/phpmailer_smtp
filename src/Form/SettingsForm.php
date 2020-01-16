@@ -328,33 +328,43 @@ class SettingsForm extends ConfigFormBase {
 
     // Send a test email message, if an email address was entered.
     if ($values['phpmailer_smtp_test']) {
-      // Since this is being sent to an email address that may not necessarily
-      // be tied to a user account, use the site's default language.
-      $langcode = $this->languageManager->getDefaultLanguage()->getId();
-
-      // Prepare the message without sending.
-      $message = $this->mailManager->mail('phpmailer_smtp', 'test', $values['phpmailer_smtp_test'], $langcode, [], NULL, FALSE);
-
-      // Send the message.
-      module_load_include('inc', 'phpmailer_smtp', 'includes/phpmailer_smtp.drupal');
-      phpmailer_smtp_send($message);
-
-      // Some users may not have the dblog module enabled.
-      if ($this->moduleHandler->moduleExists('dblog')) {
-        $watchdog_url = Link::createFromRoute($this->t('Check the logs'), 'dblog.overview');
-        $this->messenger()->addMessage($this->t('A test e-mail has been sent to %email. @watchdog-url for any error messages.', [
-          '%email' => $values['phpmailer_smtp_test'],
-          '@watchdog-url' => $watchdog_url->toString(),
-        ]));
-      }
-      else {
-        $this->messenger()->addMessage($this->t('A test e-mail has been sent to %email.', [
-          '%email' => $values['phpmailer_smtp_test'],
-        ]));
-      }
+      $this->sendTestEmail($values);
     }
 
     parent::submitForm($form, $form_state);
+  }
+
+  /**
+   * Sends a test email.
+   *
+   * @param array $values
+   *   Array of form values.
+   */
+  private function sendTestEmail(array $values) {
+    // Since this is being sent to an email address that may not necessarily
+    // be tied to a user account, use the site's default language.
+    $langcode = $this->languageManager->getDefaultLanguage()->getId();
+
+    // Prepare the message without sending.
+    $message = $this->mailManager->mail('phpmailer_smtp', 'test', $values['phpmailer_smtp_test'], $langcode, [], NULL, FALSE);
+
+    // Send the message using PHPMailer SMTP.
+    $phpMailerSmtp = $this->mailManager->createInstance('phpmailer_smtp');
+    $phpMailerSmtp->mail($message);
+
+    // Some users may not have the dblog module enabled.
+    if ($this->moduleHandler->moduleExists('dblog')) {
+      $watchdog_url = Link::createFromRoute($this->t('Check the logs'), 'dblog.overview');
+      $this->messenger()->addMessage($this->t('A test e-mail has been sent to %email. @watchdog-url for any error messages.', [
+        '%email' => $values['phpmailer_smtp_test'],
+        '@watchdog-url' => $watchdog_url->toString(),
+      ]));
+    }
+    else {
+      $this->messenger()->addMessage($this->t('A test e-mail has been sent to %email.', [
+        '%email' => $values['phpmailer_smtp_test'],
+      ]));
+    }
   }
 
 }

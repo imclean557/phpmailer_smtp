@@ -2,10 +2,14 @@
 
 namespace Drupal\phpmailer_smtp\Plugin\Mail;
 
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Mail\MailInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Implements the base PHPMailer SMTP class for the Drupal MailInterface.
@@ -18,7 +22,7 @@ use PHPMailer\PHPMailer\PHPMailer;
  *   description = @Translation("Sends emails via SMTP using the PHPMailer library.")
  * )
  */
-class PhpMailerSmtp extends PHPMailer implements MailInterface {
+class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactoryPluginInterface {
 
   use StringTranslationTrait;
 
@@ -72,15 +76,45 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
   public $drupalDebugOutput = '';
 
   /**
+   * Logger channel factory.
+   *
+   * @var Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $loggerFactory;
+
+  /**
+   * Creates an instance of the plugin.
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   The container to pull out services used in the plugin.
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   *
+   * @return static
+   *   Returns an instance of this plugin.
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('logger.factory')
+    );
+  }
+
+  /**
    * Constructor.
    */
-  public function __construct() {
-    $this->config = \Drupal::config('phpmailer_smtp.settings');
-
+  public function __construct($config, LoggerChannelFactoryInterface $logger_factory) {
     // Throw exceptions instead of dying (since 5.0.0).
     if (method_exists(get_parent_class($this), '__construct')) {
       parent::__construct(TRUE);
     }
+
+    $this->config = $config->get('phpmailer_smtp.settings');
+    $this->loggerFactory = $logger_factory;
 
     $this->IsSMTP();
     $this->Reset();
@@ -137,14 +171,14 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
         $this->SmtpClose();
       }
     }
-    catch (phpmailerException $exception) {
+    catch (Exception $exception) {
     }
 
     if ($this->SMTPDebug) {
       if ($this->drupalDebug && ($this->drupalDebugOutput = ob_get_contents())) {
         drupal_set_message($this->drupalDebugOutput);
         if ($this->config->get('smtp_debug_log', 0)) {
-          \Drupal::logger('phpmailer_smtp')->debug('Output of communication with SMTP server:<br /><pre>{output}</pre>', ['output' => print_r($this->drupalDebugOutput, TRUE)]);
+          $this->loggerFactory->get('phpmailer_smtp')->debug('Output of communication with SMTP server:<br /><pre>{output}</pre>', ['output' => print_r($this->drupalDebugOutput, TRUE)]);
         }
       }
       ob_end_clean();
@@ -456,7 +490,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface {
       $arguments += [
         '@message' => var_export($message, TRUE),
       ];
-      \Drupal::logger('phpmailer_smtp')->error($output, $arguments);
+      $this->loggerFactory->get('phpmailer_smtp')->error($output, $arguments);
       return FALSE;
     }
   }

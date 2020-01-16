@@ -87,14 +87,14 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Primary SMTP server'),
       '#default_value' => $config->get('smtp_host'),
-      '#description' => $this->t('The host name or IP address of your primary SMTP server.  Use %gmail-smtp for Google Mail.', ['%gmail-smtp' => 'smtp.gmail.com']),
+      '#description' => $this->t('The host name or IP address of your primary SMTP server.'),
       '#required' => TRUE,
     ];
     $form['server']['smtp_hostbackup'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Backup SMTP server'),
       '#default_value' => $config->get('smtp_hostbackup'),
-      '#description' => $this->t('Optional host name or IP address of a backup server, if the primary server fails.  You may override the default port below by appending it to the host name separated by a colon.  Example: %hostname', ['%hostname' => 'localhost:465']),
+      '#description' => $this->t('Optional host name or IP address of a backup server, if the primary server fails.  You may override the default port below by appending it to the host name separated by a colon.  Example: %hostname', ['%hostname' => 'localhost:587']),
     ];
     $form['server']['smtp_port'] = [
       '#type' => 'textfield',
@@ -114,7 +114,7 @@ class SettingsForm extends ConfigFormBase {
         'ssl' => $this->t('SSL'),
         'tls' => $this->t('TLS'),
       ],
-      '#description' => $this->t('Whether to use an encrypted connection to communicate with the SMTP server.  Google Mail requires SSL.'),
+      '#description' => $this->t('Whether to use an encrypted connection to communicate with the SMTP server.'),
     ];
     if (!function_exists('openssl_open')) {
       $form['server']['smtp_protocol']['#default_value'] = '';
@@ -134,7 +134,6 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Username'),
       '#default_value' => $config->get('smtp_username'),
-      '#description' => $this->t('For Google Mail, enter your username, including "@gmail.com".'),
     ];
     if (!$config->get('smtp_hide_password')) {
       $form['auth']['smtp_password'] = [

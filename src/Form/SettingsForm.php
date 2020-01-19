@@ -97,7 +97,7 @@ class SettingsForm extends ConfigFormBase {
       '#description' => $this->t('Optional host name or IP address of a backup server, if the primary server fails.  You may override the default port below by appending it to the host name separated by a colon.  Example: %hostname', ['%hostname' => 'localhost:587']),
     ];
     $form['server']['smtp_port'] = [
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('SMTP port'),
       '#size' => 5,
       '#maxlength' => 5,

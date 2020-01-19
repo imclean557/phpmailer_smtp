@@ -2,6 +2,7 @@
 
 namespace Drupal\phpmailer_smtp\Plugin\Mail;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Mail\MailInterface;
@@ -25,6 +26,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactoryPluginInterface {
 
   use StringTranslationTrait;
+
+  /**
+   * Config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
 
   /**
    * PHPMailer SMTP Config.
@@ -107,12 +115,13 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   /**
    * Constructor.
    */
-  public function __construct($config, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(ConfigFactoryInterface $config, LoggerChannelFactoryInterface $logger_factory) {
     // Throw exceptions instead of dying (since 5.0.0).
     if (method_exists(get_parent_class($this), '__construct')) {
       parent::__construct(TRUE);
     }
 
+    $this->configFactory = $config;
     $this->config = $config->get('phpmailer_smtp.settings');
     $this->loggerFactory = $logger_factory;
 
@@ -214,7 +223,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     $from_name = $this->config->get('smtp_fromname');
     if ($from_name == '') {
       // Fall back on the site name.
-      $from_name = \Drupal::config('system.site')->get('name');
+      $from_name = $this->configFactory->get('system.site')->get('name');
     }
     $this->FromName  = $from_name;
     $this->Sender    = '';
@@ -326,7 +335,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       unset($message['headers']['From']);
 
       // @todo This \still\ might not be the correct way to do this.
-      $phpmailer_smtp_debug_email = \Drupal::config('system.maintenance')->get('phpmailer_smtp_debug_email');
+      $phpmailer_smtp_debug_email = $this->configFactory->get('system.maintenance')->get('phpmailer_smtp_debug_email');
       if (empty($phpmailer_smtp_debug_email)) {
         // Set recipients.
         foreach (phpmailer_smtp_parse_address($message['to']) as $address) {
@@ -409,7 +418,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $senderOption = $this->config->get('smtp_envelope_sender_option');
 
       if ($senderOption === 'site_mail') {
-        $this->Sender = \Drupal::config('system.site')->get('mail');
+        $this->Sender = $this->configFactory->get('system.site')->get('mail');
       }
 
       if ($senderOption === 'from_address') {

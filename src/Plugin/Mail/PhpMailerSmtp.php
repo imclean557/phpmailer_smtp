@@ -4,6 +4,7 @@ namespace Drupal\phpmailer_smtp\Plugin\Mail;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -91,6 +92,13 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   protected $loggerFactory;
 
   /**
+   * The messenger.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * Creates an instance of the plugin.
    *
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
@@ -108,7 +116,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $container->get('config.factory'),
-      $container->get('logger.factory')
+      $container->get('logger.factory'),
+      $container->get('messenger')
     );
   }
 
@@ -124,6 +133,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     $this->configFactory = $config;
     $this->config = $config->get('phpmailer_smtp.settings');
     $this->loggerFactory = $logger_factory;
+    $this->messenger = $messenger;
 
     $this->IsSMTP();
     $this->Reset();
@@ -185,7 +195,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
     if ($this->SMTPDebug) {
       if ($this->drupalDebug && ($this->drupalDebugOutput = ob_get_contents())) {
-        drupal_set_message($this->drupalDebugOutput);
+        $this->messenger->addMessage($this->drupalDebugOutput);
         if ($this->config->get('smtp_debug_log', 0)) {
           $this->loggerFactory->get('phpmailer_smtp')->debug('Output of communication with SMTP server:<br /><pre>{output}</pre>', ['output' => print_r($this->drupalDebugOutput, TRUE)]);
         }

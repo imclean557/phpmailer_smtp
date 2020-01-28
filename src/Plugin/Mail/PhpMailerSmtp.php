@@ -291,7 +291,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   }
 
   /**
-   * Public wrapper around PHPMailer::RFCDate().
+   * Public wrapper around PHPMailer::RFCDate() to return the current timezone
+   * instead of the default timezone.
    */
   public static function rfcDate() {
     $tz = date('Z');

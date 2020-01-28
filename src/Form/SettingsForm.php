@@ -11,7 +11,7 @@ use Drupal\Core\Mail\MailManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines a form that configures devel settings.
+ * Defines a form to configure PHPMailer SMTP settings.
  */
 class SettingsForm extends ConfigFormBase {
 

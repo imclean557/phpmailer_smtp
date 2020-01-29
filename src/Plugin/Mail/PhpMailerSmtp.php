@@ -87,7 +87,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   /**
    * Logger channel factory.
    *
-   * @var Drupal\Core\Logger\LoggerChannelFactoryInterface
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
    */
   protected $loggerFactory;
 
@@ -291,8 +291,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   }
 
   /**
-   * Public wrapper around PHPMailer::RFCDate() to return the current timezone
-   * instead of the default timezone.
+   * Wrap PHPMailer::RFCDate() to return the current timezone.
    */
   public static function rfcDate() {
     $tz = date('Z');

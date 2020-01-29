@@ -124,7 +124,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   /**
    * Constructor.
    */
-  public function __construct(ConfigFactoryInterface $config, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(ConfigFactoryInterface $config, LoggerChannelFactoryInterface $logger_factory, MessengerInterface $messenger) {
     // Throw exceptions instead of dying (since 5.0.0).
     if (method_exists(get_parent_class($this), '__construct')) {
       parent::__construct(TRUE);

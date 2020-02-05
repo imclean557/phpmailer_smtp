@@ -153,7 +153,7 @@ class SettingsForm extends ConfigFormBase {
       $form['auth']['smtp_password'] = [
         '#type' => 'password',
         '#title' => $have_password ? $this->t('Change password') : $this->t('Password'),
-        '#description' => $have_password ? $this->t('Leave empty, if you do not intend to change the current password.') : '',
+        '#description' => $have_password ? $this->t('Leave empty if you do not intend to change the current password.') : '',
       ];
     }
 
@@ -318,7 +318,12 @@ class SettingsForm extends ConfigFormBase {
       ->set('smtp_envelope_sender_option', $values['smtp_envelope_sender_option'])
       ->set('smtp_envelope_sender', $values['smtp_envelope_sender']);
 
-    // Only save the password, if it is not empty.
+    // Only save option if it is present.
+    if (!empty($values['smtp_hide_password'])) {
+      $phpmailer_smtp_config->set('smtp_hide_password', $values['smtp_hide_password']);
+    }
+
+    // Only save the password if it is not empty.
     if (!empty($values['smtp_password'])) {
       $phpmailer_smtp_config->set('smtp_password', $values['smtp_password']);
     }

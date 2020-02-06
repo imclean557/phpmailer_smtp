@@ -208,6 +208,13 @@ class SettingsForm extends ConfigFormBase {
         ],
       ],
     ];
+    $form['advanced']['smtp_timeout'] = [
+      '#type' => 'number',
+      '#step' => 1,
+      '#title' => $this->t('SMTP timeout'),
+      '#default_value' => $config->get('smtp_timeout'),
+      '#description' => $this->t('The number of seconds to wait for a response from the SMTP server.'),
+    ];
 
     $form['advanced']['ssl_settings'] = [
       '#type' => 'fieldset',
@@ -315,6 +322,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('smtp_keepalive', $values['smtp_keepalive'])
       ->set('smtp_debug', $values['smtp_debug'])
       ->set('smtp_debug_log', $values['smtp_debug_log'])
+      ->set('smtp_timeout', $values['smtp_timeout'])
       ->set('smtp_envelope_sender_option', $values['smtp_envelope_sender_option'])
       ->set('smtp_envelope_sender', $values['smtp_envelope_sender']);
 

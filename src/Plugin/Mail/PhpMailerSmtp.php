@@ -162,7 +162,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
     $this->SMTPKeepAlive = $this->config->get('smtp_keepalive', 0);
 
-    $this->Timeout = 30;
+    $this->Timeout = $this->config->get('smtp_timeout', 30);
 
     $this->drupalDebug = $this->config->get('smtp_debug', 0);
     if ($this->drupalDebug > $this->SMTPDebug && \Drupal::currentUser()->hasPermission('administer phpmailer smtp settings')) {

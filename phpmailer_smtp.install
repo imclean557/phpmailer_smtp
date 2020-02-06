@@ -45,3 +45,12 @@ function phpmailer_smtp_requirements($phase) {
 
   return $requirements;
 }
+
+/**
+ * Add SMTP timeout setting.
+ */
+function phpmailer_smtp_update_8001() {
+  \Drupal::configFactory()->getEditable('phpmailer_smtp.settings')
+    ->set('smtp_timeout', 30)
+    ->save(TRUE);
+}

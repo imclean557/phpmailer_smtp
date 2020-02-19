@@ -100,13 +100,3 @@ EXAMPLES
 
   This will change the recipient of all e-mails to the configured address.
 
-
-CREDITS
--------
-
-Authors:
-* Ian McLean (imclean) - http://drupal.org/u/imclean
-
-Original authors of the PHPMailer module:
-* Stefan M. Kudwien (smk-ka) - http://drupal.org/user/48898
-* Daniel F. Kudwien (sun) - http://drupal.org/user/54136

@@ -81,6 +81,8 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // Get immutable config.
+    $config = $this->configFactory()->get('phpmailer_smtp.settings');
     $config = $this->config('phpmailer_smtp.settings');
 
     $form['server']['smtp_host'] = [

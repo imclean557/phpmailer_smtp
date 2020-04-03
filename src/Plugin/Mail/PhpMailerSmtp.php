@@ -460,7 +460,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
       return $this->Send();
     }
-    catch (phpmailerException $e) {
+    catch (Exception $e) {
       // Log the error including verbose debug information.
       // Since DBLog module is the most common case, we use HTML to format the
       // message for visual inspection. For sites running with Syslog or other

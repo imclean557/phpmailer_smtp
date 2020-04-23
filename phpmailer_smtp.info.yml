@@ -4,3 +4,4 @@ type: module
 package: Mail
 core: 8.x
 configure: phpmailer_smtp.settings
+core_version_requirement: ^8.8 || ^9

@@ -225,8 +225,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
     $this->Priority = 3;
 
-    // @todo Need to find out where this variable comes from.
-    // $this->CharSet     = variable_get('smtp_charset', 'utf-8');
+    $this->CharSet     = 'utf-8';
     $this->ContentType = 'text/plain';
     $this->Encoding    = '8bit';
 

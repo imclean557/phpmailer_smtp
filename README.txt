@@ -99,4 +99,3 @@ EXAMPLES
       = 'your_debug_email@yoursite.com';
 
   This will change the recipient of all e-mails to the configured address.
-

@@ -419,6 +419,11 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
         unset($message['headers']['Return-Path']);
       }
 
+      // X-Mailer is set by PHPMailer which is the mailer.
+      if (isset($message['headers']['X-Mailer'])) {
+        unset($message['headers']['X-Mailer']);
+      }
+
       // Set default sender address.
       $envelopeSender = phpmailer_smtp_parse_address($message['from']);
       $envelopeSender = reset($envelopeSender);

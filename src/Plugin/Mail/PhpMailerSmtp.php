@@ -483,11 +483,10 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       if ($this->drupalDebugOutput) {
         // PHPMailer debug output contains HTML linebreaks. PRE is more
         // readable.
-        $this->drupalDebugOutput = str_replace('<br />', '', $this->drupalDebugOutput);
         $output .= '<p><strong>Server response:</strong></p>';
         $output .= "<pre>\n@smtp_output\n</pre>";
         $arguments += [
-          '@smtp_output' => $this->drupalDebugOutput,
+          '@smtp_output' => str_replace("<br>\n", "\n", Html::decodeEntities($this->drupalDebugOutput)),
         ];
       }
       // We need to log the message in order to be able to debug why the server

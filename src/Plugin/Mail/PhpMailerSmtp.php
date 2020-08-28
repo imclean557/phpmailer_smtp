@@ -2,11 +2,13 @@
 
 namespace Drupal\phpmailer_smtp\Plugin\Mail;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Mail\MailInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -196,9 +198,11 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
     if ($this->SMTPDebug) {
       if ($this->drupalDebug && ($this->drupalDebugOutput = ob_get_contents())) {
-        $this->messenger->addMessage($this->drupalDebugOutput);
+        $this->messenger->addMessage(Markup::create($this->drupalDebugOutput));
         if ($this->config->get('smtp_debug_log', 0)) {
-          $this->loggerFactory->get('phpmailer_smtp')->debug('Output of communication with SMTP server:<br /><pre>{output}</pre>', ['output' => print_r($this->drupalDebugOutput, TRUE)]);
+          $this->loggerFactory->get('phpmailer_smtp')->debug('Output of communication with SMTP server:<br /><pre>{output}</pre>', [
+            'output' => str_replace("<br>\n", "\n", Html::decodeEntities($this->drupalDebugOutput)),
+          ]);
         }
       }
       ob_end_clean();

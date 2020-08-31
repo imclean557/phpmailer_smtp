@@ -146,7 +146,7 @@ class SettingsForm extends ConfigFormBase {
         '#type' => 'checkbox',
         '#title' => $this->t('Hide password'),
         '#default_value' => 0,
-        '#description' => $this->t("Check this option to permanently hide the plaintext password from peeking eyes. You may still change the password afterwards, but it won't be displayed anymore."),
+        '#description' => $this->t("Check this option to permanently hide the plain text password. You may still change the password afterwards, but it won't be displayed anymore."),
       ];
     }
     else {
@@ -157,6 +157,12 @@ class SettingsForm extends ConfigFormBase {
         '#description' => $have_password ? $this->t('Leave empty if you do not intend to change the current password.') : '',
       ];
     }
+    $form['auth']['smtp_delete_password'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Delete password'),
+      '#default_value' => 0,
+      '#description' => $this->t("Check this option to delete the current password."),
+    ];
 
     $form['advanced'] = [
       '#type' => 'details',
@@ -335,6 +341,11 @@ class SettingsForm extends ConfigFormBase {
     // Only save the password if it is not empty.
     if (!empty($values['smtp_password'])) {
       $phpmailer_smtp_config->set('smtp_password', $values['smtp_password']);
+    }
+
+    // Check option to delete the password.
+    if (!empty($values['smtp_delete_password'])) {
+      $phpmailer_smtp_config->set('smtp_password', '');
     }
 
     $phpmailer_smtp_config->save();

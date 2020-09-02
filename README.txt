@@ -56,13 +56,15 @@ CONFIGURATION
 EXAMPLES
 --------
 
+Port 465 is now encouraged: https://tools.ietf.org/html/rfc8314
+
 * Using Google Mail or Google Apps as SMTP server
 
   To send e-mails with Google Mail use the following settings:
 
     SMTP server:     smtp.gmail.com
-    SMTP port:       587
-    Secure protocol: TLS
+    SMTP port:       465
+    Secure protocol: SSL
     Username:        your_google_mail_name@gmail.com
       or:            your_username@your_google_apps_domain.com
     Password:        your_google_mail_password

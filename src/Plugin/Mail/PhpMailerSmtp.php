@@ -340,9 +340,9 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   public function mail(array $message) {
     try {
       // Parse 'From' address.
-      $from = phpmailer_smtp_parse_address($message['headers']['From']);
+      $from = $this->parseAddresses($message['headers']['From']);
       $from = reset($from);
-      $this->From = $from['mail'];
+      $this->From = $from['address'];
       if ($from['name'] != '') {
         $this->FromName = $from['name'];
       }
@@ -352,18 +352,18 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $phpmailer_smtp_debug_email = $this->configFactory->get('system.maintenance')->get('phpmailer_smtp_debug_email');
       if (empty($phpmailer_smtp_debug_email)) {
         // Set recipients.
-        foreach (phpmailer_smtp_parse_address($message['to']) as $address) {
-          $this->AddAddress($address['mail'], $address['name']);
+        foreach ($this->parseAddresses($message['to']) as $address) {
+          $this->AddAddress($address['address'], $address['name']);
         }
         // Extract CCs and BCCs from headers.
         if (!empty($message['headers']['Cc'])) {
-          foreach (phpmailer_smtp_parse_address($message['headers']['Cc']) as $address) {
-            $this->AddCC($address['mail'], $address['name']);
+          foreach ($this->parseAddresses($message['headers']['Cc']) as $address) {
+            $this->AddCC($address['address'], $address['name']);
           }
         }
         if (!empty($message['headers']['Bcc'])) {
-          foreach (phpmailer_smtp_parse_address($message['headers']['Bcc']) as $address) {
-            $this->AddBCC($address['mail'], $address['name']);
+          foreach ($this->parseAddresses($message['headers']['Bcc']) as $address) {
+            $this->AddBCC($address['address'], $address['name']);
           }
         }
       }
@@ -376,8 +376,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
       // Extract Reply-To from headers.
       if (isset($message['headers']['Reply-To'])) {
-        foreach (phpmailer_smtp_parse_address($message['headers']['Reply-To']) as $address) {
-          $this->AddReplyTo($address['mail'], $address['name']);
+        foreach ($this->parseAddresses($message['headers']['Reply-To']) as $address) {
+          $this->AddReplyTo($address['address'], $address['name']);
         }
         unset($message['headers']['Reply-To']);
       }
@@ -385,7 +385,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       elseif ($this->config->get('smtp_always_replyto')) {
         // If no Reply-To header has been explicitly set, use the From address
         // to be able to respond to e-mails sent via Google Mail.
-        $this->AddReplyTo($from['mail'], $from['name']);
+        $this->AddReplyTo($from['address'], $from['name']);
       }
 
       // Extract Content-Type and charset.
@@ -429,9 +429,9 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       }
 
       // Set default sender address.
-      $envelopeSender = phpmailer_smtp_parse_address($message['from']);
+      $envelopeSender = $this->parseAddresses($message['from']);
       $envelopeSender = reset($envelopeSender);
-      $this->Sender = $envelopeSender['mail'];
+      $this->Sender = $envelopeSender['address'];
 
       // Check envelope sender option.
       $senderOption = $this->config->get('smtp_envelope_sender_option');
@@ -441,7 +441,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       }
 
       if ($senderOption === 'from_address') {
-        $this->Sender = $from['mail'];
+        $this->Sender = $from['address'];
       }
 
       if ($senderOption === 'other') {

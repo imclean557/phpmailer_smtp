@@ -20,15 +20,3 @@ function phpmailer_smtp_help($route_name, RouteMatchInterface $route_match) {
     default:
   }
 }
-
-/**
- * Implements hook_mail().
- */
-function phpmailer_smtp_mail($key, &$message, $params) {
-  switch ($key) {
-    case 'test':
-      $message['subject'] = (string) t('PHPMailer SMTP test email');
-      $message['body'][] = (string) t('Your site is properly configured to send emails using the PHPMailer library.');
-      break;
-  }
-}

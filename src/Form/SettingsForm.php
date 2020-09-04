@@ -371,6 +371,8 @@ class SettingsForm extends ConfigFormBase {
 
     // Prepare the message without sending.
     $message = $this->mailManager->mail('phpmailer_smtp', 'test', $values['phpmailer_smtp_test'], $langcode, [], NULL, FALSE);
+    $message['subject'] = (string) t('PHPMailer SMTP test email');
+    $message['body'] = (string) t('Your site is properly configured to send emails using the PHPMailer library.');
 
     // Send the message using PHPMailer SMTP.
     $phpMailerSmtp = $this->mailManager->createInstance('phpmailer_smtp');

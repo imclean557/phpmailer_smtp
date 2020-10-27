@@ -103,7 +103,7 @@ class SettingsForm extends ConfigFormBase {
       '#size' => 5,
       '#maxlength' => 5,
       '#default_value' => $config->get('smtp_port'),
-      '#description' => $this->t('The standard SMTP port is 25. Secure connections (including Google Mail), typically use 587.'),
+      '#description' => $this->t('The standard SMTP port is 25. Secure connections (including Google Mail), typically use 465.'),
       '#required' => TRUE,
     ];
     $form['server']['smtp_protocol'] = [

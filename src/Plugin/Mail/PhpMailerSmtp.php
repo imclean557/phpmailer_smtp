@@ -339,14 +339,18 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
    */
   public function mail(array $message) {
     try {
+      // Convert headers to lowercase.
+      $headers = array_change_key_case($message['headers']);
+      unset($message['headers']);
+
       // Parse 'From' address.
-      $from = $this->parseAddresses($message['headers']['From']);
+      $from = $this->parseAddresses($headers['from']);
       $from = reset($from);
       $this->From = $from['address'];
       if ($from['name'] != '') {
         $this->FromName = $from['name'];
       }
-      unset($message['headers']['From']);
+      unset($headers['from']);
 
       // @todo This \still\ might not be the correct way to do this.
       $phpmailer_smtp_debug_email = $this->configFactory->get('system.maintenance')->get('phpmailer_smtp_debug_email');
@@ -356,13 +360,13 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
           $this->AddAddress($address['address'], $address['name']);
         }
         // Extract CCs and BCCs from headers.
-        if (!empty($message['headers']['Cc'])) {
-          foreach ($this->parseAddresses($message['headers']['Cc']) as $address) {
+        if (!empty($headers['cc'])) {
+          foreach ($this->parseAddresses($headers['cc']) as $address) {
             $this->AddCC($address['address'], $address['name']);
           }
         }
-        if (!empty($message['headers']['Bcc'])) {
-          foreach ($this->parseAddresses($message['headers']['Bcc']) as $address) {
+        if (!empty($headers['bcc'])) {
+          foreach ($this->parseAddresses($headers['bcc']) as $address) {
             $this->AddBCC($address['address'], $address['name']);
           }
         }
@@ -372,14 +376,14 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
         // @todo This might not be the correct way to do this.
         $this->AddAddress($phpmailer_smtp_debug_email);
       }
-      unset($message['headers']['Cc'], $message['headers']['Bcc']);
+      unset($headers['cc'], $headers['bcc']);
 
       // Extract Reply-To from headers.
-      if (isset($message['headers']['Reply-To'])) {
-        foreach ($this->parseAddresses($message['headers']['Reply-To']) as $address) {
+      if (isset($headers['reply-to'])) {
+        foreach ($this->parseAddresses($headers['reply-to']) as $address) {
           $this->AddReplyTo($address['address'], $address['name']);
         }
-        unset($message['headers']['Reply-To']);
+        unset($headers['reply-to']);
       }
       // @todo This might not be the correct way to do this.
       elseif ($this->config->get('smtp_always_replyto')) {
@@ -389,8 +393,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       }
 
       // Extract Content-Type and charset.
-      if (isset($message['headers']['Content-Type'])) {
-        $content_type = explode(';', $message['headers']['Content-Type']);
+      if (isset($headers['content-type'])) {
+        $content_type = explode(';', $headers['content-type']);
         $this->ContentType = trim(array_shift($content_type));
         foreach ($content_type as $param) {
           $param = explode('=', $param, 2);
@@ -402,30 +406,30 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
             $this->ContentType .= '; ' . $key . '=' . trim($param[1]);
           }
         }
-        unset($message['headers']['Content-Type']);
+        unset($headers['content-type']);
       }
 
       // Set additional properties.
       $properties = [
-        'X-Priority'                => 'Priority',
-        'Content-Transfer-Encoding' => 'Encoding',
-        'Message-ID'                => 'MessageID',
+        'x-priority'                => 'Priority',
+        'content-transfer-encoding' => 'Encoding',
+        'message-id'                => 'MessageID',
       ];
       foreach ($properties as $source => $property) {
-        if (isset($message['headers'][$source])) {
-          $this->$property = $message['headers'][$source];
-          unset($message['headers'][$source]);
+        if (isset($headers[$source])) {
+          $this->$property = $headers[$source];
+          unset($headers[$source]);
         }
       }
 
       // Return-Path should not be set by Drupal.
-      if (isset($message['headers']['Return-Path'])) {
-        unset($message['headers']['Return-Path']);
+      if (isset($headers['return-path'])) {
+        unset($headers['return-path']);
       }
 
       // X-Mailer is set by PHPMailer which is the mailer.
-      if (isset($message['headers']['X-Mailer'])) {
-        unset($message['headers']['X-Mailer']);
+      if (isset($headers['x-mailer'])) {
+        unset($headers['x-mailer']);
       }
 
       // Set default sender address.
@@ -453,13 +457,13 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       }
 
       // This one is always set by PHPMailer.
-      unset($message['headers']['MIME-Version']);
+      unset($headers['mime-version']);
 
       // Add remaining header lines.
       // Note: Any header lines MUST already be checked by the caller for
       // unwanted newline characters to avoid header injection.
       // @see PHPMailer::SecureHeader()
-      foreach ($message['headers'] as $key => $value) {
+      foreach ($headers as $key => $value) {
         $this->AddCustomHeader($key, $value);
       }
 

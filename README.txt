@@ -27,9 +27,6 @@ Optional:
 * Mime Mail module to format HTML emails
   http://www.drupal.org/project/mimemail
 
-* Swift Mailer module to format HTML emails
-  https://www.drupal.org/project/swiftmailer
-
 INSTALLATION
 ------------
 

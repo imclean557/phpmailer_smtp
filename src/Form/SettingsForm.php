@@ -262,19 +262,19 @@ class SettingsForm extends ConfigFormBase {
     $form['advanced']['ssl_settings'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Advanced SSL settings'),
-      '#description' => $this->t('If you are attempting to connect to a broken or malconfigured secure mail server, you can try toggling one or more of these options. <strong>If changing any of these options allows connection to the server, you should consider either fixing the SSL certifcate, or using a different SMTP server, as the connection may be insecure.</strong>'),
+      '#description' => $this->t('If you are attempting to connect to a broken or malconfigured secure mail server, you can try toggling one or more of these options. <strong>If changing any of these options allows connection to the server, you should consider either fixing the SSL certificate, or using a different SMTP server, as the connection may be insecure.</strong>'),
     ];
     $ssl_verify_peer = $config->get('smtp_ssl_verify_peer');
     $form['advanced']['ssl_settings']['smtp_ssl_verify_peer'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Verfy peer'),
+      '#title' => $this->t('Verify peer'),
       '#default_value' => isset($ssl_verify_peer) ? $ssl_verify_peer : 1,
       '#description' => $this->t('If this is checked, it will require verification of the SSL certificate being used on the mail server.'),
     ];
     $ssl_verify_peer_name = $config->get('smtp_ssl_verify_peer_name');
     $form['advanced']['ssl_settings']['smtp_ssl_verify_peer_name'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Verfy peer name'),
+      '#title' => $this->t('Verify peer name'),
       '#default_value' => isset($ssl_verify_peer_name) ? $ssl_verify_peer_name : 1,
       '#description' => $this->t("If this is checked, it will require verification of the mail server's name in the SSL certificate."),
     ];
@@ -283,7 +283,7 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Allow self signed'),
       '#default_value' => isset($ssl_allow_self_signed) ? $ssl_allow_self_signed : 0,
-      '#description' => $this->t('If this is checked, it will allow conecting to a mail server with a self-signed SSL certificate. (This requires "Verfy peer" to be enabled.)'),
+      '#description' => $this->t('If this is checked, it will allow conecting to a mail server with a self-signed SSL certificate. (This requires "Verify peer" to be enabled.)'),
       '#states' => [
         'enabled' => [
           ':input[name="ssl_verify_peer"]' => ['checked' => TRUE],

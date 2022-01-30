@@ -347,7 +347,10 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $from = $this->parseAddresses($headers['from']);
       $from = reset($from);
       $this->From = $from['address'];
-      if ($from['name'] != '') {
+
+      // Set From name.
+      $this->FromName = $this->config->get('smtp_fromname');
+      if ($this->FromName == '' && $from['name'] !== '') {
         $this->FromName = $from['name'];
       }
       unset($headers['from']);

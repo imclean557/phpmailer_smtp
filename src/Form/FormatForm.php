@@ -39,6 +39,7 @@ class FormatForm extends ConfigFormBase {
         'plain_text' => $this->t('Plain text'),
         'html' => $this->t('HTML'),
       ],
+      '#description' => $this->t('Setting the format to HTML will cause the "Content-Type" header to be respected.'),
     ];
 
     return parent::buildForm($form, $form_state);

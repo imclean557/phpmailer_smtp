@@ -379,18 +379,6 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       // Generate email HTML including inline images.
       $this->msgHTML($rendered, DRUPAL_ROOT, TRUE);
 
-      // Attach files under "files".
-      if (!empty($message['params']['files']) && is_array($message['params']['files'])) {
-        $this->addAttachments($message['params']['files']);
-      }
-
-      // Attach files under "attachments".
-      if (!empty($message['params']['attachments']) && is_array($message['params']['attachments'])) {
-        $this->addAttachments($message['params']['attachments']);
-      }
-
-      // Create the message body.
-      $message['body'] = $this->createBody();
     }
     else {
       $this->isHTML(FALSE);
@@ -400,7 +388,23 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $message['body'] = MailFormatHelper::htmlToText($message['body']);
       // Wrap the mail body for sending.
       $message['body'] = MailFormatHelper::wrapMail($message['body']);
+      $this->body = $message['body'];
     }
+
+    // Attach files under "files".
+    if (!empty($message['params']['files']) && is_array($message['params']['files'])) {
+      $this->addAttachments($message['params']['files']);
+    }
+
+    // Attach files under "attachments".
+    if (!empty($message['params']['attachments']) && is_array($message['params']['attachments'])) {
+      $this->addAttachments($message['params']['attachments']);
+    }
+
+    // Create the message body.
+    $this->createBody();
+
+    $message['body'] = $this->body;
 
     return $message;
   }

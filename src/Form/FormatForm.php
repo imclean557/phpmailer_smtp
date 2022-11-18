@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
  * Defines a form to configure PHPMailer SMTP settings.
  */
 class FormatForm extends ConfigFormBase {
+
   /**
    * {@inheritdoc}
    */
@@ -37,7 +38,7 @@ class FormatForm extends ConfigFormBase {
       '#options' => [
         'plain_text' => $this->t('Plain text'),
         'html' => $this->t('HTML'),
-      ],      
+      ],
     ];
 
     return parent::buildForm($form, $form_state);

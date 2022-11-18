@@ -211,7 +211,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $this->SMTPDebug = $this->drupalDebug;
     }
   }
-  
+
   /**
    * Send mail via SMTP.
    *
@@ -411,7 +411,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
    * @param array $attachments
    *   An array of attachments.
    */
-  public function addAttachments($attachments) {
+  public function addAttachments(array $attachments) {
     foreach ($attachments as $attachment) {
       // Validate essential fields.
       if (empty($attachment['filepath']) && empty($attachment['filecontent'])) {

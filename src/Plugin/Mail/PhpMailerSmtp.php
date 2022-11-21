@@ -168,12 +168,12 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   public function smtpInit() {
     $this->SMTPAutoTLS = FALSE;
 
-    $this->Host = $this->config->get('smtp_host', '');
-    if ($backup = $this->config->get('smtp_hostbackup', '')) {
+    $this->Host = $this->config->get('smtp_host');
+    if ($backup = $this->config->get('smtp_hostbackup')) {
       $this->Host .= ';' . $backup;
     }
-    $this->Port = $this->config->get('smtp_port', '25');
-    $smtp_protocol = $this->config->get('smtp_protocol', '');
+    $this->Port = $this->config->get('smtp_port');
+    $smtp_protocol = $this->config->get('smtp_protocol');
     $this->SMTPSecure = $smtp_protocol;
 
     if (!empty($smtp_protocol)) {
@@ -188,8 +188,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     // Check for basic authentication.
     if ($this->config->get('smtp_authentication_type') === 'basic_auth') {
       // Use SMTP authentication if both username and password are given.
-      $this->Username = $this->config->get('smtp_username', '');
-      $this->Password = $this->config->get('smtp_password', '');
+      $this->Username = $this->config->get('smtp_username');
+      $this->Password = $this->config->get('smtp_password');
       $this->SMTPAuth = (bool) ($this->Username != '' && $this->Password != '');
     }
     // If not basic auth, check for OAuth2 plugins.
@@ -202,11 +202,11 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $this->SMTPAuth = TRUE;
     }
 
-    $this->SMTPKeepAlive = $this->config->get('smtp_keepalive', 0);
+    $this->SMTPKeepAlive = $this->config->get('smtp_keepalive');
 
-    $this->Timeout = $this->config->get('smtp_timeout', 30);
+    $this->Timeout = $this->config->get('smtp_timeout');
 
-    $this->drupalDebug = $this->config->get('smtp_debug', 0);
+    $this->drupalDebug = $this->config->get('smtp_debug');
     if ($this->drupalDebug > $this->SMTPDebug && \Drupal::currentUser()->hasPermission('administer phpmailer smtp settings')) {
       $this->SMTPDebug = $this->drupalDebug;
     }
@@ -238,7 +238,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     if ($this->SMTPDebug) {
       if ($this->drupalDebug && ($this->drupalDebugOutput = ob_get_contents())) {
         $this->messenger->addMessage(Markup::create($this->drupalDebugOutput));
-        if ($this->config->get('smtp_debug_log', 0)) {
+        if ($this->config->get('smtp_debug_log')) {
           $this->loggerFactory->get('phpmailer_smtp')->debug('Output of communication with SMTP server:<br /><pre>{output}</pre>', [
             'output' => str_replace("<br>\n", "\n", Html::decodeEntities($this->drupalDebugOutput)),
           ]);

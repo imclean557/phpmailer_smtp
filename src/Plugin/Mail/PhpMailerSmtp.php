@@ -402,9 +402,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     }
 
     // Create the message body.
-    $this->createBody();
-
-    $message['body'] = $this->body;
+    $message['body'] = $this->createBody();
 
     return $message;
   }
@@ -417,20 +415,23 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
    */
   public function addAttachments(array $attachments) {
     foreach ($attachments as $attachment) {
+      if (is_array($attachment)) {
+        $attachment = (object) $attachment;
+      }
       // Validate essential fields.
-      if (empty($attachment['filepath']) && empty($attachment['filecontent'])) {
+      if (empty($attachment->filepath) && empty($attachment->filecontent)) {
         continue;
       }
-      if (empty($attachment['filename']) || empty($attachment['filemime'])) {
+      if (empty($attachment->filename) || empty($attachment->filemime)) {
         continue;
       }
 
       // Attach file..
-      if (!empty($attachment['filepath'])) {
-        $this->addAttachment($attachment['filepath'], $attachment['filename'], self::ENCODING_BASE64, $attachment['filemime']);
+      if (!empty($attachment->filepath)) {
+        $this->addAttachment($attachment->filepath, $attachment->filename, self::ENCODING_BASE64, $attachment->filemime);
       }
       else {
-        $this->addStringAttachment($attachment['filecontent'], $attachment['filename'], self::ENCODING_BASE64, $attachment['filemime']);
+        $this->addStringAttachment($attachment->filecontent, $attachment->filename, self::ENCODING_BASE64, $attachment->filemime);
       }
     }
   }
@@ -516,6 +517,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
       // Extract Content-Type and charset.
       if (isset($headers['content-type'])) {
+        // Remove any trailing semicolon.
+        $headers['content-type'] = rtrim($headers['content-type'], ';');
         if ($format === 'html') {
           $content_type = explode(';', $headers['content-type']);
           $this->ContentType = trim(array_shift($content_type));

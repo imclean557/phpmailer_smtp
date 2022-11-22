@@ -38,8 +38,8 @@ CONFIGURATION
 * Configure your Mail System settings at Administer >> Configuration >>
   Mail System.
 
-  Select "PHPMailer SMTP" as "Sender" and "Formatter" under "Default Mail System" and "Module-
-  Specific Configuration" as required.
+  Select "PHPMailer SMTP" as "Sender" and "Formatter" under "Default Mail System" and 
+  "Module-Specific Configuration" as required.
 
 EXAMPLES
 --------
@@ -83,15 +83,14 @@ Port 465 is now encouraged: https://tools.ietf.org/html/rfc8314
   development site.  To enable this feature, add the following lines to the end
   of your settings.php (usually located in sites/default):
 
-    $conf['system.maintenance']['phpmailer_smtp_debug_email']
-      = 'your_debug_email@yoursite.com';
+    $conf['system.maintenance']['phpmailer_smtp_debug_email'] = 'your_debug_email@yoursite.com';
 
   This will change the recipient of all e-mails to the configured address.
 
 OAUTH2
 ------
 
-Version 2.1.x supports a very basic plugin structure for OAuth2 authentication.
+A simple plugin type is used for OAuth2 integration.
 
 To implement, extend `Drupal\phpmailer_smtp\Plugin\PhpmailerOauth2\PhpmailerOauth2PluginBase`. 
 

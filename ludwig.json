@@ -1,8 +1,8 @@
 {
     "require": {
         "phpmailer/phpmailer": {
-            "version": "v6.6.4",
-            "url": "https://github.com/PHPMailer/PHPMailer/archive/v6.6.4.zip"
+            "version": "v6.6.5",
+            "url": "https://github.com/PHPMailer/PHPMailer/archive/v6.6.5.zip"
         }
     }
 }

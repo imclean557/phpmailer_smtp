@@ -4,6 +4,7 @@ namespace Drupal\phpmailer_smtp\Plugin\Mail;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Mail\MailFormatHelper;
@@ -138,14 +139,15 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $container->get('logger.factory'),
       $container->get('messenger'),
       $container->get('plugin.manager.phpmailer_oauth2'),
-      $container->get('renderer')
+      $container->get('renderer'),
+      $container->get('file_system')
     );
   }
 
   /**
    * Constructor.
    */
-  public function __construct(ConfigFactoryInterface $config, LoggerChannelFactoryInterface $logger_factory, MessengerInterface $messenger, PhpmailerOauth2PluginManagerInterface $plugin_manager, RendererInterface $renderer) {
+  public function __construct(ConfigFactoryInterface $config, LoggerChannelFactoryInterface $logger_factory, MessengerInterface $messenger, PhpmailerOauth2PluginManagerInterface $plugin_manager, RendererInterface $renderer, FileSystemInterface $file_system) {
     // Throw exceptions instead of dying (since 5.0.0).
     if (method_exists(get_parent_class($this), '__construct')) {
       parent::__construct(TRUE);
@@ -157,6 +159,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     $this->messenger = $messenger;
     $this->phpmailerOauth2PluginManager = $plugin_manager;
     $this->renderer = $renderer;
+    $this->fileSystem = $file_system;
 
     $this->IsSMTP();
     $this->Reset();
@@ -418,20 +421,24 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       if (is_array($attachment)) {
         $attachment = (object) $attachment;
       }
-      // Validate essential fields.
+      // Only the file itself is required.
       if (empty($attachment->filepath) && empty($attachment->filecontent)) {
         continue;
       }
-      if (empty($attachment->filename) || empty($attachment->filemime)) {
-        continue;
-      }
+
+      // PHPMailer can determine filename and mime type if they aren't present.
+      $filename = $attachment->filename ?? '';
+      $filemime = $attachment->filemime ?? '';
 
       // Attach file..
       if (!empty($attachment->filepath)) {
-        $this->addAttachment($attachment->filepath, $attachment->filename, self::ENCODING_BASE64, $attachment->filemime);
+        if (strpos($attachment->filepath, 'public://') === 0) {
+          $attachment->filepath = $this->fileSystem->realpath($attachment->filepath);
+        }
+        $this->addAttachment($attachment->filepath, $filename, self::ENCODING_BASE64, $filemime);
       }
       else {
-        $this->addStringAttachment($attachment->filecontent, $attachment->filename, self::ENCODING_BASE64, $attachment->filemime);
+        $this->addStringAttachment($attachment->filecontent, $filename, self::ENCODING_BASE64, $filemime);
       }
     }
   }

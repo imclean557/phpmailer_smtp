@@ -112,11 +112,18 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   protected $phpmailerOauth2PluginManager;
 
   /**
-   * THe renderer.
+   * The renderer.
    *
    * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
+
+  /**
+   * The file system.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
 
   /**
    * Creates an instance of the plugin.
@@ -359,6 +366,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
    *   The formatted $message.
    */
   public function format(array $message) {
+    $message['params']['formatter'] = 'phpmailer_smtp';
+
     $format = $this->configFactory->get('phpmailer_smtp.format')->get('format');
 
     if ($format === 'html') {
@@ -457,14 +466,22 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   public function mail(array $message) {
     // Initialise SMTP configuration.
     $this->smtpInit();
-    // Set the format.
-    $format = $this->configFactory->get('phpmailer_smtp.format')->get('format');
-    if ($format === 'html') {
-      $this->isHTML();
+
+    // Default is to honour the content type header.
+    $format = NULL;
+
+    // Check if PHPMailer was the formatter.
+    if (isset($message['params']['formatter']) && $message['params']['formatter'] === 'phpmailer_smtp') {
+      // If so, set the format.
+      $format = $this->configFactory->get('phpmailer_smtp.format')->get('format');
+      if ($format === 'html') {
+        $this->isHTML();
+      }
+      else {
+        $this->isHTML(FALSE);
+      }
     }
-    else {
-      $this->isHTML(FALSE);
-    }
+
     try {
       // Convert headers to lowercase.
       $headers = array_change_key_case($message['headers']);
@@ -526,7 +543,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       if (isset($headers['content-type'])) {
         // Remove any trailing semicolon.
         $headers['content-type'] = rtrim($headers['content-type'], ';');
-        if ($format === 'html') {
+        if ($format === 'html' || is_null($format)) {
           $content_type = explode(';', $headers['content-type']);
           $this->ContentType = trim(array_shift($content_type));
           foreach ($content_type as $param) {

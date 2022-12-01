@@ -167,15 +167,13 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     $this->phpmailerOauth2PluginManager = $plugin_manager;
     $this->renderer = $renderer;
     $this->fileSystem = $file_system;
-
-    $this->IsSMTP();
-    $this->Reset();
   }
 
   /**
    * Initialise SMTP settings.
    */
   public function smtpInit() {
+    $this->IsSMTP();
     $this->SMTPAutoTLS = FALSE;
 
     $this->Host = $this->config->get('smtp_host');
@@ -413,8 +411,8 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $this->addAttachments($message['params']['attachments']);
     }
 
-    // Create the message body.
-    $message['body'] = $this->createBody();
+    // Add the message body.
+    $message['body'] = $this->Body;
 
     return $message;
   }
@@ -439,7 +437,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $filename = $attachment->filename ?? '';
       $filemime = $attachment->filemime ?? '';
 
-      // Attach file..
+      // Attach file.
       if (!empty($attachment->filepath)) {
         if (strpos($attachment->filepath, 'public://') === 0) {
           $attachment->filepath = $this->fileSystem->realpath($attachment->filepath);

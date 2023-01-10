@@ -501,17 +501,17 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $phpmailer_smtp_debug_email = $this->configFactory->get('system.maintenance')->get('phpmailer_smtp_debug_email');
       if (empty($phpmailer_smtp_debug_email)) {
         // Set recipients.
-        foreach ($this->parseAddresses($message['to'], TRUE, self::CHARSET_UTF8) as $address) {
+        foreach ($this->parseAddresses($message['to']) as $address) {
           $this->AddAddress($address['address'], $address['name']);
         }
         // Extract CCs and BCCs from headers.
         if (!empty($headers['cc'])) {
-          foreach ($this->parseAddresses($headers['cc'], TRUE, self::CHARSET_UTF8) as $address) {
+          foreach ($this->parseAddresses($headers['cc']) as $address) {
             $this->AddCC($address['address'], $address['name']);
           }
         }
         if (!empty($headers['bcc'])) {
-          foreach ($this->parseAddresses($headers['bcc'], TRUE, self::CHARSET_UTF8) as $address) {
+          foreach ($this->parseAddresses($headers['bcc']) as $address) {
             $this->AddBCC($address['address'], $address['name']);
           }
         }
@@ -525,7 +525,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
       // Extract Reply-To from headers.
       if (isset($headers['reply-to'])) {
-        foreach ($this->parseAddresses($headers['reply-to'], TRUE, self::CHARSET_UTF8) as $address) {
+        foreach ($this->parseAddresses($headers['reply-to']) as $address) {
           $this->AddReplyTo($address['address'], $address['name']);
         }
         unset($headers['reply-to']);
@@ -585,7 +585,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       }
 
       // Set default sender address.
-      $envelopeSender = $this->parseAddresses($message['from'], TRUE, self::CHARSET_UTF8);
+      $envelopeSender = $this->parseAddresses($message['from']);
       $envelopeSender = reset($envelopeSender);
       $this->Sender = $envelopeSender['address'];
 

@@ -355,6 +355,15 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   }
 
   /**
+   * Override PHPMailer's html2text() to handle newlines properly.
+   *
+   * {@inheritdoc}
+   */
+  public function html2text($html, $advanced = FALSE) {
+    return MailFormatHelper::htmlToText(trim(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/si', '', $html)));
+  }
+
+  /**
    * Concatenates and wraps the e-mail body for plain-text mails.
    *
    * @param array $message

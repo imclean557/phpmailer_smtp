@@ -407,7 +407,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $message['body'] = MailFormatHelper::htmlToText($message['body']);
       // Wrap the mail body for sending.
       $message['body'] = MailFormatHelper::wrapMail($message['body']);
-      $this->body = $message['body'];
+      $this->Body = $message['body'];
     }
 
     // Attach files under "files".

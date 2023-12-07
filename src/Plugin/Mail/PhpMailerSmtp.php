@@ -376,6 +376,16 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     $message['params']['formatter'] = 'phpmailer_smtp';
 
     $format = $this->configFactory->get('phpmailer_smtp.format')->get('format');
+    $headers = array_change_key_case($message['headers']);
+
+    // Check content type header and honour text/plain if set.
+    if (isset($headers['content-type'])) {
+      $parts = explode(';', $headers['content-type']);
+      $content_type = trim(array_shift($parts));
+      if ($content_type === 'text/plain') {
+        $format = 'plain_text';
+      }
+    }
 
     if ($format === 'html') {
       $this->isHTML();
@@ -494,6 +504,30 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $headers = array_change_key_case($message['headers']);
       unset($message['headers']);
 
+      // Extract Content-Type and charset.
+      if (isset($headers['content-type'])) {
+        // Remove any trailing semicolon.
+        $headers['content-type'] = rtrim($headers['content-type'], ';');
+        if ($format === 'html' || is_null($format)) {
+          $content_type = explode(';', $headers['content-type']);
+          $this->ContentType = trim(array_shift($content_type));
+          foreach ($content_type as $param) {
+            $param = explode('=', $param, 2);
+            $key = trim($param[0]);
+            if ($key == 'charset') {
+              $this->CharSet = trim($param[1]);
+            }
+            else {
+              $this->ContentType .= '; ' . $key . '=' . trim($param[1]);
+            }
+          }
+        }
+        else {
+          $this->ContentType = 'text/plain';
+        }
+        unset($headers['content-type']);
+      }
+
       // Parse 'From' address.
       $from = $this->parseAddresses($headers['from'], TRUE, self::CHARSET_UTF8);
       $from = reset($from);
@@ -544,30 +578,6 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
         // If no Reply-To header has been explicitly set, use the From address
         // to be able to respond to e-mails sent via Google Mail.
         $this->AddReplyTo($from['address'], $from['name']);
-      }
-
-      // Extract Content-Type and charset.
-      if (isset($headers['content-type'])) {
-        // Remove any trailing semicolon.
-        $headers['content-type'] = rtrim($headers['content-type'], ';');
-        if ($format === 'html' || is_null($format)) {
-          $content_type = explode(';', $headers['content-type']);
-          $this->ContentType = trim(array_shift($content_type));
-          foreach ($content_type as $param) {
-            $param = explode('=', $param, 2);
-            $key = trim($param[0]);
-            if ($key == 'charset') {
-              $this->CharSet = trim($param[1]);
-            }
-            else {
-              $this->ContentType .= '; ' . $key . '=' . trim($param[1]);
-            }
-          }
-        }
-        else {
-          $this->ContentType = 'text/plain';
-        }
-        unset($headers['content-type']);
       }
 
       // Set additional properties.

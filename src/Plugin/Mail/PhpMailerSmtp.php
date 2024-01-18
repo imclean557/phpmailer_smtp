@@ -175,6 +175,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   public function smtpInit() {
     $this->IsSMTP();
     $this->SMTPAutoTLS = FALSE;
+    $this->CharSet = 'utf-8';
 
     $this->Host = $this->config->get('smtp_host');
     if ($backup = $this->config->get('smtp_hostbackup')) {

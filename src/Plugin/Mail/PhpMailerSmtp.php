@@ -377,12 +377,12 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
    */
   public function format(array $message) {
     $message['params']['formatter'] = 'phpmailer_smtp';
-
-    $format = $this->configFactory->get('phpmailer_smtp.format')->get('format');
+    $config = $this->configFactory->get('phpmailer_smtp.format');
+    $format = $config->get('format');
     $headers = array_change_key_case($message['headers']);
 
     // Check content type header and honour text/plain if set.
-    if (isset($headers['content-type'])) {
+    if (isset($headers['content-type']) && !$config->get('force_html')) {
       $parts = explode(';', $headers['content-type']);
       $content_type = trim(array_shift($parts));
       if ($content_type === 'text/plain') {

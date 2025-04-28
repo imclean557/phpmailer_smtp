@@ -268,21 +268,21 @@ class SettingsForm extends ConfigFormBase {
     $form['advanced']['ssl_settings']['smtp_ssl_verify_peer'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Verify peer'),
-      '#default_value' => isset($ssl_verify_peer) ? $ssl_verify_peer : 1,
+      '#default_value' => $ssl_verify_peer ?? 1,
       '#description' => $this->t('If this is checked, it will require verification of the SSL certificate being used on the mail server.'),
     ];
     $ssl_verify_peer_name = $config->get('smtp_ssl_verify_peer_name');
     $form['advanced']['ssl_settings']['smtp_ssl_verify_peer_name'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Verify peer name'),
-      '#default_value' => isset($ssl_verify_peer_name) ? $ssl_verify_peer_name : 1,
+      '#default_value' => $ssl_verify_peer_name ?? 1,
       '#description' => $this->t("If this is checked, it will require verification of the mail server's name in the SSL certificate."),
     ];
     $ssl_allow_self_signed = $config->get('smtp_ssl_allow_self_signed');
     $form['advanced']['ssl_settings']['smtp_ssl_allow_self_signed'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Allow self signed'),
-      '#default_value' => isset($ssl_allow_self_signed) ? $ssl_allow_self_signed : 0,
+      '#default_value' => $ssl_allow_self_signed ?? 0,
       '#description' => $this->t('If this is checked, it will allow conecting to a mail server with a self-signed SSL certificate. (This requires "Verify peer" to be enabled.)'),
       '#states' => [
         'enabled' => [

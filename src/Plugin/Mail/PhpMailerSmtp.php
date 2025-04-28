@@ -6,17 +6,17 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Mail\MailInterface;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\phpmailer_smtp\PluginManager\PhpmailerOauth2PluginManagerInterface;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\OAuth;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\OAuth;
+use PHPMailer\PHPMailer\PHPMailer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -49,11 +49,16 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   protected $config;
 
   /**
-   * Whether to allow sending messages with an empty body.
+   * Overrides PHPMailer::AllowEmpty.
    *
    * @var bool
+   *
+   * Whether to allow sending messages with an empty body.
+   *
+   * @phpcs:disable Drupal.NamingConventions.ValidVariableName.LowerCamelName
    */
   public $AllowEmpty = TRUE;
+  // phpcs:enable
 
   /**
    * Verbose debug output level configured for Drupal.
@@ -80,8 +85,11 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
    * @var int
    *
    * Capture SMTP communication errors by default.
+   *
+   * @phpcs:disable Drupal.NamingConventions.ValidVariableName.LowerCamelName
    */
   public $SMTPDebug = 2;
+  // phpcs:enable
 
   /**
    * Stores the verbose debug output of the SMTP communication.
@@ -187,11 +195,11 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
     if (!empty($smtp_protocol)) {
       $ssl_verify_peer = $this->config->get('smtp_ssl_verify_peer');
-      $this->SMTPOptions['ssl']['verify_peer'] = isset($ssl_verify_peer) ? $ssl_verify_peer : 1;
+      $this->SMTPOptions['ssl']['verify_peer'] = $ssl_verify_peer ?? 1;
       $ssl_verify_peer_name = $this->config->get('smtp_ssl_verify_peer_name');
-      $this->SMTPOptions['ssl']['verify_peer_name'] = isset($ssl_verify_peer_name) ? $ssl_verify_peer_name : 1;
+      $this->SMTPOptions['ssl']['verify_peer_name'] = $ssl_verify_peer_name ?? 1;
       $ssl_allow_self_signed = $this->config->get('smtp_ssl_allow_self_signed');
-      $this->SMTPOptions['ssl']['allow_self_signed'] = isset($ssl_allow_self_signed) ? $ssl_allow_self_signed : 0;
+      $this->SMTPOptions['ssl']['allow_self_signed'] = $ssl_allow_self_signed ?? 0;
     }
 
     // Check for basic authentication.
@@ -397,7 +405,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
       // Generate the HTML.
       $render = [
-        '#theme' => isset($message['params']['theme']) ? $message['params']['theme'] : 'phpmailer_smtp',
+        '#theme' => $message['params']['theme'] ?? 'phpmailer_smtp',
         '#body' => $message['body'],
         '#module' => $message['module'],
         '#key' => $message['key'],

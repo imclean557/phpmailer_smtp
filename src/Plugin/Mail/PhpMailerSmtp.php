@@ -406,7 +406,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       ];
 
       // Theme the body content.
-      $rendered = $this->renderer->renderPlain($render);
+      $rendered = $this->renderer->renderInIsolation($render);
 
       // Generate email HTML including inline images.
       $this->msgHTML($rendered, DRUPAL_ROOT, TRUE);

@@ -123,9 +123,9 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('Use secure protocol'),
       '#default_value' => $config->get('smtp_protocol'),
       '#options' => [
-        '' => $this->t('No'),
-        'ssl' => $this->t('SSL'),
-        'tls' => $this->t('TLS'),
+        '' => $this->t('None'),
+        'ssl' => $this->t('SSL/TLS'),
+        'tls' => $this->t('STARTTLS'),
       ],
       '#description' => $this->t('Whether to use an encrypted connection to communicate with the SMTP server.'),
     ];

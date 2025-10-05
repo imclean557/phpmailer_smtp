@@ -319,37 +319,36 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   }
 
   /**
-   * Provide more user-friendly error messages.
+   * Set Drupal-specific language translations for error messages.
    *
-   * Note: messages should not end with a dot.
+   * This method provides Drupal translations for PHPMailer error messages.
+   * It's called from the constructor to ensure translations are available.
    */
-  public function setLanguage($langcode = 'en', $lang_path = 'language/') {
-    // Retrieve English defaults to ensure all message keys are set.
-    parent::SetLanguage('en');
+  protected function setDrupalTranslations() {
+    static::setLanguage('en');
 
     // Overload with Drupal translations.
-    $this->language = [
-      'authenticate'        => $this->t('SMTP error: Could not authenticate.'),
-      'connect_host'        => $this->t('SMTP error: Could not connect to host.'),
-      'data_not_accepted'   => $this->t('SMTP error: Data not accepted.'),
-      'smtp_connect_failed' => $this->t('SMTP error: Could not connect to SMTP host.'),
-      'smtp_error'          => $this->t('SMTP server error:'),
+    static::$language = [
+        'authenticate'        => $this->t('SMTP error: Could not authenticate.'),
+        'connect_host'        => $this->t('SMTP error: Could not connect to host.'),
+        'data_not_accepted'   => $this->t('SMTP error: Data not accepted.'),
+        'smtp_connect_failed' => $this->t('SMTP error: Could not connect to SMTP host.'),
+        'smtp_error'          => $this->t('SMTP server error:'),
 
-      // Messages used during email generation.
-      'empty_message'       => $this->t('Message body empty'),
-      'encoding'            => $this->t('Unknown encoding:'),
-      'variable_set'        => $this->t('Cannot set or reset variable:'),
+        // Messages used during email generation.
+        'empty_message'       => $this->t('Message body empty'),
+        'encoding'            => $this->t('Unknown encoding:'),
+        'variable_set'        => $this->t('Cannot set or reset variable:'),
 
-      'file_access'         => $this->t('File error: Could not access file:'),
-      'file_open'           => $this->t('File error: Could not open file:'),
+        'file_access'         => $this->t('File error: Could not access file:'),
+        'file_open'           => $this->t('File error: Could not open file:'),
 
-      // Non-administrative messages.
-      'from_failed'         => $this->t('The following From address failed:'),
-      'invalid_address'     => $this->t('Invalid address'),
-      'provide_address'     => $this->t('You must provide at least one recipient e-mail address.'),
-      'recipients_failed'   => $this->t('The following recipients failed:'),
-    ] + $this->language;
-    return TRUE;
+        // Non-administrative messages.
+        'from_failed'         => $this->t('The following From address failed:'),
+        'invalid_address'     => $this->t('Invalid address'),
+        'provide_address'     => $this->t('You must provide at least one recipient e-mail address.'),
+        'recipients_failed'   => $this->t('The following recipients failed:'),
+      ] + static::$language;
   }
 
   /**
@@ -495,6 +494,9 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     // Initialise SMTP configuration.
     $this->smtpInit();
 
+    // Set up Drupal-specific language translations for error messages.
+    $this->setDrupalTranslations();
+
     // Default is to honour the content type header.
     $format = NULL;
 
@@ -540,7 +542,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       }
 
       // Parse 'From' address.
-      $from = $this->parseAddresses($headers['from'], TRUE, self::CHARSET_UTF8);
+      $from = $this->parseAddresses($headers['from'], NULL, self::CHARSET_UTF8);
       $from = reset($from);
       $this->From = $from['address'];
 
@@ -555,17 +557,17 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $phpmailer_smtp_debug_email = $this->configFactory->get('system.maintenance')->get('phpmailer_smtp_debug_email');
       if (empty($phpmailer_smtp_debug_email)) {
         // Set recipients.
-        foreach ($this->parseAddresses($message['to'], TRUE, self::CHARSET_UTF8) as $address) {
+        foreach ($this->parseAddresses($message['to'], NULL, self::CHARSET_UTF8) as $address) {
           $this->AddAddress($address['address'], $address['name']);
         }
         // Extract CCs and BCCs from headers.
         if (!empty($headers['cc'])) {
-          foreach ($this->parseAddresses($headers['cc'], TRUE, self::CHARSET_UTF8) as $address) {
+          foreach ($this->parseAddresses($headers['cc'], NULL, self::CHARSET_UTF8) as $address) {
             $this->AddCC($address['address'], $address['name']);
           }
         }
         if (!empty($headers['bcc'])) {
-          foreach ($this->parseAddresses($headers['bcc'], TRUE, self::CHARSET_UTF8) as $address) {
+          foreach ($this->parseAddresses($headers['bcc'], NULL, self::CHARSET_UTF8) as $address) {
             $this->AddBCC($address['address'], $address['name']);
           }
         }
@@ -579,7 +581,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
       // Extract Reply-To from headers.
       if (isset($headers['reply-to'])) {
-        foreach ($this->parseAddresses($headers['reply-to'], TRUE, self::CHARSET_UTF8) as $address) {
+        foreach ($this->parseAddresses($headers['reply-to'], NULL, self::CHARSET_UTF8) as $address) {
           $this->AddReplyTo($address['address'], $address['name']);
         }
         unset($headers['reply-to']);
@@ -615,7 +617,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       }
 
       // Set default sender address.
-      $envelopeSender = $this->parseAddresses($message['from'], TRUE, self::CHARSET_UTF8);
+      $envelopeSender = $this->parseAddresses($message['from'], NULL, self::CHARSET_UTF8);
       $envelopeSender = reset($envelopeSender);
       $this->Sender = $envelopeSender['address'];
 

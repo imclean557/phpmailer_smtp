@@ -331,26 +331,26 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
 
     // Overload with Drupal translations.
     static::$language = [
-        'authenticate'        => $this->t('SMTP error: Could not authenticate.'),
-        'connect_host'        => $this->t('SMTP error: Could not connect to host.'),
-        'data_not_accepted'   => $this->t('SMTP error: Data not accepted.'),
-        'smtp_connect_failed' => $this->t('SMTP error: Could not connect to SMTP host.'),
-        'smtp_error'          => $this->t('SMTP server error:'),
+      'authenticate'        => $this->t('SMTP error: Could not authenticate.'),
+      'connect_host'        => $this->t('SMTP error: Could not connect to host.'),
+      'data_not_accepted'   => $this->t('SMTP error: Data not accepted.'),
+      'smtp_connect_failed' => $this->t('SMTP error: Could not connect to SMTP host.'),
+      'smtp_error'          => $this->t('SMTP server error:'),
 
         // Messages used during email generation.
-        'empty_message'       => $this->t('Message body empty'),
-        'encoding'            => $this->t('Unknown encoding:'),
-        'variable_set'        => $this->t('Cannot set or reset variable:'),
+      'empty_message'       => $this->t('Message body empty'),
+      'encoding'            => $this->t('Unknown encoding:'),
+      'variable_set'        => $this->t('Cannot set or reset variable:'),
 
-        'file_access'         => $this->t('File error: Could not access file:'),
-        'file_open'           => $this->t('File error: Could not open file:'),
+      'file_access'         => $this->t('File error: Could not access file:'),
+      'file_open'           => $this->t('File error: Could not open file:'),
 
         // Non-administrative messages.
-        'from_failed'         => $this->t('The following From address failed:'),
-        'invalid_address'     => $this->t('Invalid address'),
-        'provide_address'     => $this->t('You must provide at least one recipient e-mail address.'),
-        'recipients_failed'   => $this->t('The following recipients failed:'),
-      ] + static::$language;
+      'from_failed'         => $this->t('The following From address failed:'),
+      'invalid_address'     => $this->t('Invalid address'),
+      'provide_address'     => $this->t('You must provide at least one recipient e-mail address.'),
+      'recipients_failed'   => $this->t('The following recipients failed:'),
+    ] + static::$language;
   }
 
   /**

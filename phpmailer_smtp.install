@@ -5,8 +5,6 @@
  * PHPMailer SMTP installation functions.
  */
 
-use PHPMailer\PHPMailer\PHPMailer;
-
 /**
  * Add SMTP timeout setting.
  */

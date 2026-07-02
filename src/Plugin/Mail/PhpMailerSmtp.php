@@ -6,13 +6,16 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Mail\Attribute\Mail;
 use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\phpmailer_smtp\PluginManager\PhpmailerOauth2PluginManagerInterface;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\OAuth;
@@ -23,13 +26,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Implements the base PHPMailer SMTP class for the Drupal MailInterface.
  *
  * Base PHPMailer for Drupal implementation with support for SMTP keep-alive.
- *
- * @Mail(
- *   id = "phpmailer_smtp",
- *   label = @Translation("PHPMailer SMTP"),
- *   description = @Translation("Sends emails via SMTP using the PHPMailer library.")
- * )
  */
+#[Mail(
+  id: 'phpmailer_smtp',
+  label: new TranslatableMarkup('PHPMailer SMTP'),
+  description: new TranslatableMarkup('Sends emails via SMTP using the PHPMailer library.'),
+)]
 class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactoryPluginInterface {
 
   use StringTranslationTrait;
@@ -134,6 +136,13 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
   protected $fileSystem;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected $currentUser;
+
+  /**
    * Creates an instance of the plugin.
    *
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
@@ -155,14 +164,15 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
       $container->get('messenger'),
       $container->get('plugin.manager.phpmailer_oauth2'),
       $container->get('renderer'),
-      $container->get('file_system')
+      $container->get('file_system'),
+      $container->get('current_user')
     );
   }
 
   /**
    * Constructor.
    */
-  public function __construct(ConfigFactoryInterface $config, LoggerChannelFactoryInterface $logger_factory, MessengerInterface $messenger, PhpmailerOauth2PluginManagerInterface $plugin_manager, RendererInterface $renderer, FileSystemInterface $file_system) {
+  public function __construct(ConfigFactoryInterface $config, LoggerChannelFactoryInterface $logger_factory, MessengerInterface $messenger, PhpmailerOauth2PluginManagerInterface $plugin_manager, RendererInterface $renderer, FileSystemInterface $file_system, AccountProxyInterface $current_user) {
     // Throw exceptions instead of dying (since 5.0.0).
     if (method_exists(get_parent_class($this), '__construct')) {
       parent::__construct(TRUE);
@@ -175,6 +185,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     $this->phpmailerOauth2PluginManager = $plugin_manager;
     $this->renderer = $renderer;
     $this->fileSystem = $file_system;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -226,7 +237,7 @@ class PhpMailerSmtp extends PHPMailer implements MailInterface, ContainerFactory
     }
 
     $this->drupalDebug = $this->config->get('smtp_debug');
-    if ($this->drupalDebug > $this->SMTPDebug && \Drupal::currentUser()->hasPermission('administer phpmailer smtp settings')) {
+    if ($this->drupalDebug > $this->SMTPDebug && $this->currentUser->hasPermission('administer phpmailer smtp settings')) {
       $this->SMTPDebug = $this->drupalDebug;
     }
   }

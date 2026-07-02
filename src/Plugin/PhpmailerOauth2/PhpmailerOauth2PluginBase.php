@@ -39,7 +39,9 @@ abstract class PhpmailerOauth2PluginBase extends PluginBase implements Phpmailer
   /**
    * {@inheritdoc}
    */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {}
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    return $form;
+  }
 
   /**
    * {@inheritdoc}
@@ -54,12 +56,16 @@ abstract class PhpmailerOauth2PluginBase extends PluginBase implements Phpmailer
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {}
+  public function defaultConfiguration() {
+    return [];
+  }
 
   /**
    * {@inheritdoc}
    */
-  public function getConfiguration() {}
+  public function getConfiguration() {
+    return [];
+  }
 
   /**
    * {@inheritdoc}
